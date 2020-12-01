@@ -1,0 +1,14 @@
+<form action="http://localhost:3000/process_create" method="post">
+	<!--method가 get이거나 생략되어있으면 get방식 서버에 데이터 수정/삭제/할때에는 method를 post 방식으로 해야함.
+post방식은 데이터 전달 용량이 큼.
+get방식은 용량 제한이 있음.--> 
+    <p>
+        <input type="text" name="title"/>
+    </p>
+    <p>
+        <textarea name="description"></textarea>
+    </p>
+    <p>
+        <input type="submit" />
+    </p>
+</form>
