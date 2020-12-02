@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 
-function templateHTML(title, list, body) {
+function templateHTML(title, list, body, control) {
     return `
 		<!doctype html>
 		<html>
@@ -14,7 +14,7 @@ function templateHTML(title, list, body) {
 		<body>
 		<h1><a href="/">WEB</a></h1>
 		${list}
-		<a href="/create">create</a>
+		${control}
 		${body}
 		</body>
 		</html>
@@ -47,7 +47,8 @@ var app = http.createServer(function (request, response) {
                 var title = 'Welcome';
                 var description = 'Hello, Node.js';
 				var list = templateList(filelist);
-                var template = templateHTML(title, list, `<h2>${title}</h2> ${description}`);
+                var template = templateHTML(title, list, `<h2>${title}</h2> ${description}`, `
+		<a href="/create">create</a> <a href="/update">update</a>`);
                 response.writeHead(200);
                 response.end(template);
             });
@@ -93,10 +94,11 @@ var app = http.createServer(function (request, response) {
 			var post = qs.parse(body);
 			var title = post.title;
 			var description = post.description
-			console.log(post);
+			fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+				response.writeHead(302, {Location: `/?id=${title}`});
+				response.end();
+			})
 		});
-		response.writeHead(200);
-        response.end('success');
 	}
 	else {
         response.writeHead(404);
