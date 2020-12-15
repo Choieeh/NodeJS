@@ -8,10 +8,11 @@ var app = http.createServer(function(request,response){
 	var _url = request.url;
 	var queryData = url.parse(_url, true).query;
 	//url.parse는 url의 정보를 가져옴. true는 query속성을 객체 형식으로 가져오고 false는 query 속성을 문자열 형식으로 가져옴.
-	
+	var title = queryData.id;
 	if(_url == '/'){
-		_url = '/index.html';
+		title = 'Welcome';
 	}
+	//home으로 갔을때 if문안 실행
 	if(_url == '/favicon.ico'){
 		response.writeHead(404);
 		response.end();
@@ -19,7 +20,32 @@ var app = http.createServer(function(request,response){
 	}
 	response.writeHead(200);
 	//http 프로토콜 header지정
-	response.end(fs.readFileSync(queryData.id));
+	fs.readFile(`data/${queryData.id}`, 'utf8', function(err,data){
+		var description = data;
+		var template = `
+			<!doctype html>
+			<html>
+			<head>
+			  <title>WEB1 - ${title}</title>
+			  <meta charset="utf-8">
+			</head>
+			<body>
+			  <h1><a href="/">WEB</a></h1>
+			  <ul>
+				<li><a href="/?id=HTML">HTML</a></li>
+				<li><a href="/?id=CSS">CSS</a></li>
+				<li><a href="/?id=JavaScript">JavaScript</a></li>
+			  </ul>
+			  <h2>${title}</h2>
+			  <p>${description}</p>
+			</body>
+			</html>
+			`;
+		response.end(template);
+	})
+	
+	
+//	response.end(fs.readFileSync(queryData.id));
 	//response.end는 응답 데이터 전송 즉 readFileSync함수를 실행
 	/*readFileSync는 filename의 파일을 [options]의 방식으로 읽은 후 callback으로 전달된 함수를 호출한다.
 	Sync라는 이름이 붙어있는 메소드는 동기방식을 사용한다.
