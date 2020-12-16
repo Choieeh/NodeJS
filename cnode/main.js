@@ -8,20 +8,42 @@ var app = http.createServer(function(request,response){
 	var _url = request.url;
 	var queryData = url.parse(_url, true).query;
 	//url.parse는 url의 정보를 가져옴. true는 query속성을 객체 형식으로 가져오고 false는 query 속성을 문자열 형식으로 가져옴.
-	var title = queryData.id;
-	if(_url == '/'){
-		title = 'Welcome';
-	}
-	//home으로 갔을때 if문안 실행
-	if(_url == '/favicon.ico'){
-		response.writeHead(404);
-		response.end();
-		return;
-	}
-	response.writeHead(200);
-	//http 프로토콜 header지정
-	fs.readFile(`data/${queryData.id}`, 'utf8', function(err,data){
-		var description = data;
+	var pathname = url.parse(_url, true).pathname;
+	//path는 querystring 포함 pathname은 불포함
+	
+	if(pathname === '/'){
+		if(queryData.id === undefined){
+			
+			fs.readFile(`data/${queryData.id}`, 'utf8', function(err,description){
+				var title = 'Welcome';
+				var description = 'Hello, Node.js';
+				var template = `
+					<!doctype html>
+					<html>
+					<head>
+					  <title>WEB1 - ${title}</title>
+					  <meta charset="utf-8">
+					</head>
+					<body>
+					  <h1><a href="/">WEB</a></h1>
+					  <ul>
+						<li><a href="/?id=HTML">HTML</a></li>
+						<li><a href="/?id=CSS">CSS</a></li>
+						<li><a href="/?id=JavaScript">JavaScript</a></li>
+					  </ul>
+					  <h2>${title}</h2>
+					  <p>${description}</p>
+					</body>
+					</html>
+					`;
+				response.writeHead(200);
+			//http 프로토콜 header지정
+				response.end(template);
+					});
+		} else{
+			fs.readFile(`data/${queryData.id}`, 'utf8', function(err,description){
+				
+		var title = queryData.id;
 		var template = `
 			<!doctype html>
 			<html>
@@ -41,8 +63,19 @@ var app = http.createServer(function(request,response){
 			</body>
 			</html>
 			`;
+		response.writeHead(200);
+	//http 프로토콜 header지정
 		response.end(template);
-	})
+			});
+		}
+		
+	} else{
+		response.writeHead(404);
+		//web서버와 web브라우저가 오류를 확인하기 위한 숫자
+		//즉 아무것도 없으면 서버가 404라는 숫자를 넘기게됨.
+		response.end('Not found');
+	}
+	
 	
 	
 //	response.end(fs.readFileSync(queryData.id));
@@ -61,5 +94,5 @@ http->protocol
 opentutorials.org -> host(domain)
 3000 -> port
 main -> path
-?id -> querystring
+?id~ -> querystring
 */
