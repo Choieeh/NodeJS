@@ -3,6 +3,34 @@ var fs = require('fs');
 //fs 모듈로 파일 입출력
 var url = require('url');
 
+function templateHTML(title, list, body){
+	return `
+					<!doctype html>
+					<html>
+					<head>
+					  <title>WEB1 - ${title}</title>
+					  <meta charset="utf-8">
+					</head>
+					<body>
+					  <h1><a href="/">WEB</a></h1>
+					  ${list}
+					  ${body}
+					</body>
+					</html>
+					`;
+}
+
+function templateList(filelist){
+	var list = '<ul>';
+    var i = 0;
+    while (i < filelist.length) {
+        list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+        i = i + 1;
+    }
+    list = list + '</ul>';
+	return list;
+}
+
 var app = http.createServer(function (request, response) {
     //요청이 오면 실행되는 콜백 함수
     var _url = request.url;
@@ -16,59 +44,19 @@ var app = http.createServer(function (request, response) {
             fs.readdir('./data', function (error, filelist) {
                 var title = 'Welcome';
                 var description = 'Hello, Node.js';
-                var list = '<ul>';
-                var i = 0;
-                while (i < filelist.length) {
-                    list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-                    i = i + 1;
-                }
-                list = list + '</ul>';
-                var template = `
-					<!doctype html>
-					<html>
-					<head>
-					  <title>WEB1 - ${title}</title>
-					  <meta charset="utf-8">
-					</head>
-					<body>
-					  <h1><a href="/">WEB</a></h1>
-					  ${list}
-					  <h2>${title}</h2>
-					  <p>${description}</p>
-					</body>
-					</html>
-					`;
+                var list = templateList(filelist);
+                var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
                 response.writeHead(200);
                 //http 프로토콜 header지정
                 response.end(template);
             });
         } else {
             fs.readdir('./data', function (error, filelist) {
-                var title = 'Welcome';
-                var description = 'Hello, Node.js';
-                var list = '<ul>';
-                var i = 0;
-                while (i < filelist.length) {
-                    list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-                    i = i + 1;
-                }
+                
                 fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
+					var list = templateList(filelist);
                     var title = queryData.id;
-                    var template = `
-						<!doctype html>
-						<html>
-						<head>
-						  <title>WEB1 - ${title}</title>
-						  <meta charset="utf-8">
-						</head>
-						<body>
-						  <h1><a href="/">WEB</a></h1>
-						  ${list}
-						  <h2>${title}</h2>
-						  <p>${description}</p>
-						</body>
-						</html>
-						`;
+                    var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
                     response.writeHead(200);
                     //http 프로토콜 header지정
                     response.end(template);
