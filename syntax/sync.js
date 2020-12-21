@@ -9,7 +9,6 @@ console.log('C');
 */
 //결과 A B C
 
-
 console.log('A');
 fs.readFile('sample.txt', 'utf8', function(err, result){
 	console.log(result);
